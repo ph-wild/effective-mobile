@@ -1,0 +1,213 @@
+basePath: /
+definitions:
+  models.Subscription:
+    properties:
+      created_at:
+        type: string
+      end_date:
+        type: string
+      id:
+        type: integer
+      price:
+        type: integer
+      service_name:
+        type: string
+      start_date:
+        type: string
+      updated_at:
+        type: string
+      user_id:
+        type: string
+    type: object
+  models.SubscriptionInput:
+    properties:
+      end_date:
+        type: string
+      price:
+        minimum: 0
+        type: integer
+      service_name:
+        type: string
+      start_date:
+        type: string
+      user_id:
+        type: string
+    required:
+    - price
+    - service_name
+    - start_date
+    - user_id
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: REST-сервис для подписок пользователей
+  title: Subscription API
+  version: "1.0"
+paths:
+  /subscriptions:
+    get:
+      parameters:
+      - description: UUID пользователя
+        in: query
+        name: user_id
+        type: string
+      - description: Название сервиса
+        in: query
+        name: service_name
+        type: string
+      - default: 10
+        description: Лимит
+        in: query
+        name: limit
+        type: integer
+      - default: 0
+        description: Смещение
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Subscription'
+            type: array
+      summary: Список подписок
+      tags:
+      - subscriptions
+    post:
+      consumes:
+      - application/json
+      description: Добавляет новую подписку пользователю
+      parameters:
+      - description: Subscription input
+        in: body
+        name: subscription
+        required: true
+        schema:
+          $ref: '#/definitions/models.SubscriptionInput'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.Subscription'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Создать подписку
+      tags:
+      - subscriptions
+  /subscriptions/{id}:
+    delete:
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+      summary: Удалить подписку
+      tags:
+      - subscriptions
+    get:
+      description: Возвращает подписку по ID
+      parameters:
+      - description: ID подписки
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Subscription'
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Получить подписку
+      tags:
+      - subscriptions
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Subscription
+        in: body
+        name: subscription
+        required: true
+        schema:
+          $ref: '#/definitions/models.SubscriptionInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Subscription'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+      summary: Обновить подписку
+      tags:
+      - subscriptions
+  /subscriptions/summary:
+    get:
+      parameters:
+      - description: UUID
+        in: query
+        name: user_id
+        required: true
+        type: string
+      - description: Фильтр по сервису
+        in: query
+        name: service_name
+        type: string
+      - description: Формат MM-YYYY
+        in: query
+        name: from
+        required: true
+        type: string
+      - description: Формат MM-YYYY
+        in: query
+        name: to
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: integer
+            type: object
+        "400":
+          description: Bad Request
+      summary: Сумма подписок за период
+      tags:
+      - subscriptions
+swagger: "2.0"
