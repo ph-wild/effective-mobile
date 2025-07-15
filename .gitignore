@@ -21,6 +21,11 @@
 app
 go.work
 go.work.sum
+subscriptions
+*.exe
+*.out
+*.bin
+
 
 # env file
 .env
